@@ -1,5 +1,3 @@
-
-
 package com.example.demo.controller;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +11,6 @@ import org.springframework.web.servlet.ModelAndView;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,8 +42,16 @@ public class PythonController {
             File uploadedFile = new File(ANSWER_DIR, file.getOriginalFilename());
             file.transferTo(uploadedFile);
 
-            // Build the command to run the Python script in the ANSWER_DIR
-            String command = String.format("cmd /c \"%s %s\"", pythonExecutable, uploadedFile.getAbsolutePath());
+            // Determine the Python script to run based on the uploaded file's name
+            String pythonScript = determinePythonScript(uploadedFile.getName());
+
+            if (pythonScript == null) {
+                throw new IllegalArgumentException(
+                        "No matching Python script found for file: " + uploadedFile.getName());
+            }
+
+            // Build the command to run the Python script
+            String command = String.format("cmd /c \"%s %s\"", pythonExecutable, pythonScript);
 
             // Log the command for debugging purposes
             System.out.println("Running command: " + command);
@@ -71,7 +76,8 @@ public class PythonController {
             // Wait for the process to complete
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                modelAndView.addObject("output", "Error running Python script. Exit code: " + exitCode + "\n\nOutput:\n" + output.toString());
+                modelAndView.addObject("output",
+                        "Error running Python script. Exit code: " + exitCode + "\n\nOutput:\n" + output.toString());
             } else {
                 modelAndView.addObject("output", output.toString());
             }
@@ -85,5 +91,13 @@ public class PythonController {
         }
 
         return modelAndView;
+    }
+
+    private String determinePythonScript(String uploadedFileName) {
+        if (uploadedFileName.equals("answer_bab1_percobaan1")) {
+            return "test_bab1_percobaan1.py";
+        }
+        // Add more conditions here if you have other file-script mappings
+        return null;
     }
 }
