@@ -79,7 +79,9 @@ public class PythonController {
                 modelAndView.addObject("output",
                         "Error running Python script. Exit code: " + exitCode + "\n\nOutput:\n" + output.toString());
             } else {
-                modelAndView.addObject("output", output.toString());
+                String rawOutput = output.toString();
+                String parsedOutput = parseOutput(rawOutput);
+                modelAndView.addObject("output", parsedOutput);
             }
 
             // Optionally delete the uploaded file after processing
@@ -94,10 +96,65 @@ public class PythonController {
     }
 
     private String determinePythonScript(String uploadedFileName) {
-        if (uploadedFileName.equals("answer_bab1_percobaan1")) {
+        System.out.println("Menentukan script untuk file: " + uploadedFileName);
+        
+        if (uploadedFileName.startsWith("answer_bab1_percobaan1")) {
             return "test_bab1_percobaan1.py";
+        } else if (uploadedFileName.startsWith("answer_bab1_percobaan2")) {
+            return "test_bab1_percobaan2.py";
+        } else if (uploadedFileName.startsWith("answer_bab1_percobaan3")) {
+            return "test_bab1_percobaan3.py";
+        } else if (uploadedFileName.startsWith("answer_bab2_percobaan2")) {
+            return "test_bab2_percobaan2.py";
+        } else if (uploadedFileName.startsWith("answer_bab3_percobaan1")) {
+            return "test_bab3_percobaan1.py";
+        } else if (uploadedFileName.startsWith("answer_bab3_percobaan2")) {
+            return "test_bab3_percobaan2.py";
+        } else if (uploadedFileName.startsWith("answer_bab3_percobaan3")) {
+            return "test_bab3_percobaan3.py";
+        } else if (uploadedFileName.startsWith("answer_bab3_percobaan4")) {
+            return "test_bab3_percobaan4.py";
+        } else if (uploadedFileName.startsWith("answer_bab4_percobaan4")) {
+            return "test_bab4_percobaan4.py";
+        } else if (uploadedFileName.startsWith("answer_bab4_percobaan5")) {
+            return "test_bab4_percobaan5.py";
         }
-        // Add more conditions here if you have other file-script mappings
-        return null;
+        
+        // Pemetaan default jika tidak ada yang cocok
+        return uploadedFileName.replace("answer_", "test_");
+    }
+
+    private String parseOutput(String rawOutput) {
+        StringBuilder parsedOutput = new StringBuilder();
+        String[] lines = rawOutput.split("\n");
+        String currentTest = "";
+        boolean testPassed = true;
+
+        for (String line : lines) {
+            if (line.startsWith("<DESCRIBE::>")) {
+                parsedOutput.append("## ").append(line.substring(12)).append("\n\n");
+            } else if (line.startsWith("<IT::>")) {
+                if (!currentTest.isEmpty()) {
+                    parsedOutput.append(currentTest).append(testPassed ? " - <PASSED>\n" : " - <FAILED>\n");
+                }
+                currentTest = line.substring(6);
+                testPassed = true;
+            } else if (line.startsWith("<PASSED::>")) {
+                // Tidak perlu melakukan apa-apa, test tetap dianggap lulus
+            } else if (line.startsWith("<FAILED::>")) {
+                testPassed = false;
+                parsedOutput.append("   Kesalahan: ").append(line.substring(10)).append("\n");
+            } else if (line.startsWith("<COMPLETEDIN::>")) {
+                // Opsional: Anda bisa menambahkan waktu penyelesaian jika diperlukan
+                // parsedOutput.append("   Waktu: ").append(line.substring(14)).append(" ms\n");
+            }
+        }
+
+        // Menambahkan test terakhir
+        if (!currentTest.isEmpty()) {
+            parsedOutput.append(currentTest).append(testPassed ? " - <PASSED>\n" : " - <FAILED>\n");
+        }
+
+        return parsedOutput.toString();
     }
 }
