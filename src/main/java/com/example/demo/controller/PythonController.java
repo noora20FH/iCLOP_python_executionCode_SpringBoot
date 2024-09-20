@@ -182,6 +182,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -271,27 +273,27 @@ public class PythonController {
 
     private String determinePythonScript(String uploadedFileName) {
         System.out.println("Menentukan script untuk file: " + uploadedFileName);
-        
-        if (uploadedFileName.startsWith("answer_bab1_percobaan1")) {
-            return "test_bab1_percobaan1.py";
-        } else if (uploadedFileName.startsWith("answer_bab1_percobaan2")) {
-            return "test_bab1_percobaan2.py";
-        } else if (uploadedFileName.startsWith("answer_bab1_percobaan3")) {
-            return "test_bab1_percobaan3.py";
-        } else if (uploadedFileName.startsWith("answer_bab2_percobaan2")) {
-            return "test_bab2_percobaan2.py";
-        } else if (uploadedFileName.startsWith("answer_bab3_percobaan1")) {
-            return "test_bab3_percobaan1.py";
-        } else if (uploadedFileName.startsWith("answer_bab3_percobaan2")) {
-            return "test_bab3_percobaan2.py";
-        } else if (uploadedFileName.startsWith("answer_bab3_percobaan3")) {
-            return "test_bab3_percobaan3.py";
-        } else if (uploadedFileName.startsWith("answer_bab3_percobaan4")) {
-            return "test_bab3_percobaan4.py";
-        } else if (uploadedFileName.startsWith("answer_bab4_percobaan4")) {
-            return "test_bab4_percobaan4.py";
-        } else if (uploadedFileName.startsWith("answer_bab4_percobaan5")) {
-            return "test_bab4_percobaan5.py";
+        // ?
+        if (uploadedFileName.startsWith("answer_chapter1_experiments1")) {
+            return "test_chapter1_experiments1.py";
+        } else if (uploadedFileName.startsWith("answer_chapter1_experiments2")) {
+            return "test_chapter1_experiments2.py";
+        } else if (uploadedFileName.startsWith("answer_chapter2_experiments2")) {
+            return "test_chapter2_experiments2.py";
+        } else if (uploadedFileName.startsWith("answer_chapter2_experiments3")) {
+            return "test_chapter2_experiments3.py";
+        } else if (uploadedFileName.startsWith("answer_chapter3_experiments1")) {
+            return "test_chapter3_experiments1.py";
+        } else if (uploadedFileName.startsWith("answer_chapter3_experiments2")) {
+            return "test_chapter3_experiments2.py";
+        } else if (uploadedFileName.startsWith("answer_chapter3_experiments3")) {
+            return "test_chapter3_experiments3.py";
+        } else if (uploadedFileName.startsWith("answer_chapter3_experiments4")) {
+            return "test_chapter3_experiments4.py";
+        } else if (uploadedFileName.startsWith("answer_chapter3_experiments5")) {
+            return "test_chapter3_experiments5.py";
+        } else if (uploadedFileName.startsWith("answer_chapter4_experiments1")) {
+            return "test_chapter4_experiments1.py";
         }
         
         // Pemetaan default jika tidak ada yang cocok
@@ -303,32 +305,44 @@ public class PythonController {
         String[] lines = rawOutput.split("\n");
         String currentTest = "";
         boolean testPassed = true;
+        boolean errorOccurred = false;
+        List<String> errorMessages = new ArrayList<>(); 
+        String errorMessage = "";
 
+    
         for (String line : lines) {
             if (line.startsWith("<DESCRIBE::>")) {
                 parsedOutput.append("## ").append(line.substring(12)).append("\n\n");
             } else if (line.startsWith("<IT::>")) {
                 if (!currentTest.isEmpty()) {
                     parsedOutput.append(currentTest).append(testPassed ? " - <PASSED>\n" : " - <FAILED>\n");
+                    if (errorOccurred) {
+                        parsedOutput.append("   ERROR: ").append(errorMessage).append("\n");
+                    }
                 }
                 currentTest = line.substring(6);
                 testPassed = true;
+                errorOccurred = false;
             } else if (line.startsWith("<PASSED::>")) {
                 // Tidak perlu melakukan apa-apa, test tetap dianggap lulus
             } else if (line.startsWith("<FAILED::>")) {
                 testPassed = false;
-                parsedOutput.append("   Kesalahan: ").append(line.substring(10)).append("\n");
+                errorOccurred = true;
+                errorMessages.add(line.substring(10));
             } else if (line.startsWith("<COMPLETEDIN::>")) {
                 // Opsional: Anda bisa menambahkan waktu penyelesaian jika diperlukan
                 // parsedOutput.append("   Waktu: ").append(line.substring(14)).append(" ms\n");
             }
         }
-
+    
         // Menambahkan test terakhir
         if (!currentTest.isEmpty()) {
             parsedOutput.append(currentTest).append(testPassed ? " - <PASSED>\n" : " - <FAILED>\n");
+            if (errorOccurred) {
+                parsedOutput.append("   ERROR: ").append(errorMessages.get(errorMessages.size() - 1)).append("\n");
+            }
         }
-
+    
         return parsedOutput.toString();
     }
 }
