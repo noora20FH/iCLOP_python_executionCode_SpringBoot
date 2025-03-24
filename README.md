@@ -19,6 +19,7 @@ This project emphasizes full-stack development, combining expertise in Python te
   
   ## SpringBoot: 
     - create logic to execute the Python files
+      Python file location in local: "E:\\00_Skripsi_2023_2024\\iCLOP_learning_platform_2024\\iCLOP_learning_platform_2024\\TestPython"; 
     - get the Output in JSON format
 
 ## Technologies Used:
@@ -35,4 +36,5 @@ install libraries inside the directory where the TestPython folder is located
 - pandas: pip install pandas
 - codewars_test framework: pip install git+https://github.com/codewars/python-test-framework.git#egg=codewars_test              
 
-Start SpringBoot: mvn spring-boot:run
+Start SpringBoot: 
+- mvn spring-boot:run
