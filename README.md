@@ -19,7 +19,6 @@ This project emphasizes full-stack development, combining expertise in Python te
   
   ## SpringBoot: 
     - create logic to execute the Python files
-      Python file location in local: "E:\\00_Skripsi_2023_2024\\iCLOP_learning_platform_2024\\iCLOP_learning_platform_2024\\TestPython"; 
     - get the Output in JSON format
 
 ## Technologies Used:
@@ -29,7 +28,10 @@ This project emphasizes full-stack development, combining expertise in Python te
 
 
 ## Notes:
-
+- check the python directory destination path inside PythonController.java file:
+      - iCLOP_python_executionCode_SpringBoot\src\main\java\com\example\demo\controller\PythonController.java
+- Python testing file location in local: "E:\\00_Skripsi_2023_2024\\iCLOP_learning_platform_2024\\iCLOP_learning_platform_2024\\TestPython"; 
+      
 
 install libraries inside the directory where the TestPython folder is located
 - numpy: pip install numpy
