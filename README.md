@@ -22,7 +22,7 @@ This project emphasizes full-stack development, combining expertise in Python te
     - get the Output in JSON format
 
 ## Technologies Used:
-- Frameworks: SpringBoot, Bootstrap
+- Frameworks: SpringBoot
 
 - Programming Languages: Java
 
